@@ -22,3 +22,17 @@ exports.saveScore = (req,res) => {
         })
     })
 }
+
+exports.getTop10Scores = (req,res ) => {
+    Score
+        .find()
+        .sort({score: -1})
+        .limit(10)
+        .exec()
+        .then(top10Scores => {
+            res.json({
+                length: top10Scores.length,
+                data: top10Scores
+            })
+        })
+}
