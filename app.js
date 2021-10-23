@@ -1,7 +1,7 @@
 require("./model/db")
 const express = require("express")
 const app = express();
-// const cabinetRouter = require("./routers/cabinet.route")
+const ScoresRouter = require("./router/scores.route")
 var cors = require('cors')
 const morgan = require("morgan")
 
@@ -12,6 +12,6 @@ if(process.env.NODE_ENV==="development"){
     app.use(morgan("dev"));
 }
 // Global middlewares
-// app.use("/api/v1/scores",cabinetRouter)
+app.use("/api/v1/scores",ScoresRouter)
 
 module.exports = app
