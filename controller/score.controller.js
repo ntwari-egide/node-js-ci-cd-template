@@ -10,5 +10,15 @@ exports.getAllScores = (req,res) => {
                 data: scores
             })
         })
+}
 
+exports.saveScore = (req,res) => {
+    let newScore = Score.create(req.body)
+    .then( (saved) => {
+        res.json({
+            length: 1,
+            message: 'New score is added' ,
+            data: saved
+        })
+    })
 }
