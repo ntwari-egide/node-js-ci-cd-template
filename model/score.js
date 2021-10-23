@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const bcrypt = require("bcryptjs")
 
 let ScoreSchema = mongoose.Schema({
     score: {
