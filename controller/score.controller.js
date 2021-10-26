@@ -36,3 +36,66 @@ exports.getTop10Scores = (req,res ) => {
             })
         })
 }
+
+exports.getscorestatistics  = async (req,res ) => {
+
+    let count 
+
+    await Score
+        .find()
+        .count()
+        .exec()
+        .then( counts => count = counts )
+
+    let maximumlevel
+
+    await Score
+        .find()
+        .sort({level: -1})
+        .limit(1)
+        .exec()
+        .then(toplevel => maximumlevel = toplevel[0].level )
+
+    let averagescore
+
+    await Score
+        .aggregate([
+            {
+                $group:
+                {
+                    _id: "_id",
+                    Average: {$avg: "$score"}
+                }
+            }
+        ])
+
+        .exec()
+        .then( average => {
+            res.json({
+                length: 1,
+                data: {
+                    max: maximumlevel,
+                    total: count,
+                    average: average[0].Average
+                }
+            })
+        })
+
+    
+} 
+
+exports.getMaximumLevelReached = async (req, res) => {
+
+    Score
+        .find()
+        .sort({level: -1})
+        .limit(1)
+        .exec()
+        .then(toplevel => {
+            res.json({
+                length: toplevel.length,
+                data: toplevel.level
+            })
+        })
+
+}
