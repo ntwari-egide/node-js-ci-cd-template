@@ -2,7 +2,7 @@ version: 2.1
 
 jobs:
   checkout:
-    working_directory: ~/labusafax
+    working_directory: ~/node-template-cicd
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -10,9 +10,9 @@ jobs:
       - save_cache:
           key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/labusafax
+            - ~/node-template-cicd
   dependencies:
-    working_directory: ~/labusafax
+    working_directory: ~/node-template-cicd
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -31,10 +31,10 @@ jobs:
       - save_cache:
           key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - ~/labusafax/node_modules
+            - ~/node-template-cicd/node_modules
   
   test:
-    working_directory: ~/labusafax
+    working_directory: ~/node-template-cicd
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -46,7 +46,7 @@ jobs:
           npm run test
 
   build:
-    working_directory: ~/labusafax
+    working_directory: ~/node-template-cicd
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -60,11 +60,11 @@ jobs:
       - save_cache:
           key: v0-build-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/labusafax/dist/labusafax
+            - ~/node-template-cicd/dist/node-template-cicd
 
 workflows:
   version: 2
-  ci:
+  ci-cd:
     jobs:
       - checkout
       - dependencies:
