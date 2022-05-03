@@ -2,7 +2,7 @@ version: 2.1
 
 jobs:
   checkout:
-    working_directory: ~/node-js-ci-cd-template
+    working_directory: ~/labusafax
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -10,9 +10,9 @@ jobs:
       - save_cache:
           key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/node-js-ci-cd-template
+            - ~/labusafax
   dependencies:
-    working_directory: ~/node-js-ci-cd-template
+    working_directory: ~/labusafax
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -31,24 +31,10 @@ jobs:
       - save_cache:
           key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - ~/node-js-ci-cd-template/node_modules
-  lint:
-    working_directory: ~/node-js-ci-cd-template
-    docker:
-      - image: circleci/node:12.22-browsers
-    steps:
-      - restore_cache:
-          key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
-      - run:
-          name: ESLint
-          command: npm run lint
-      # - run:
-      #     name: Prettier
-      #     command: npm run prettier:check
+            - ~/labusafax/node_modules
+  
   test:
-    working_directory: ~/node-js-ci-cd-template
+    working_directory: ~/labusafax
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -57,14 +43,10 @@ jobs:
       - restore_cache:
           key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
       - run:
-          name: Copy .env
-          command: cp .env.example .env
-      - run:
-          name: Wait for Postgres to start
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          npm run test
 
   build:
-    working_directory: ~/node-js-ci-cd-template
+    working_directory: ~/labusafax
     docker:
       - image: circleci/node:12.22-browsers
     steps:
@@ -72,13 +54,13 @@ jobs:
           key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
-      - run:
-          name: Build
-          command: npm run build
+      # - run:
+      #     name: Build
+      #     command: npm run build
       - save_cache:
           key: v0-build-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/node-js-ci-cd-template/dist/node-js-ci-cd-template
+            - ~/labusafax/dist/labusafax
 
 workflows:
   version: 2
@@ -88,12 +70,9 @@ workflows:
       - dependencies:
           requires:
             - checkout
-      - lint:
-          requires:
-            - dependencies
       - test:
           requires:
-            - lint
+            - checkout
       - build:
           requires:
             - test
