@@ -1,0 +1,78 @@
+version: 2.1
+
+jobs:
+  checkout:
+    working_directory: ~/node-template-cicd
+    docker:
+      - image: circleci/node:12.22-browsers
+    steps:
+      - checkout
+      - save_cache:
+          key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/node-template-cicd
+  dependencies:
+    working_directory: ~/node-template-cicd
+    docker:
+      - image: circleci/node:12.22-browsers
+    steps:
+      - restore_cache:
+          key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
+
+      - run:
+          name: checking version
+          command: npm --version
+
+      - run:
+          name: Install dependencies
+          command: npm install --no-optional
+      - save_cache:
+          key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - ~/node-template-cicd/node_modules
+  
+  test:
+    working_directory: ~/node-template-cicd
+    docker:
+      - image: circleci/node:12.22-browsers
+    steps:
+      - restore_cache:
+          key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
+      - run:
+          npm run test
+
+  build:
+    working_directory: ~/node-template-cicd
+    docker:
+      - image: circleci/node:12.22-browsers
+    steps:
+      - restore_cache:
+          key: v0-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v0-node-{{ .Branch }}-{{ checksum "package.json" }}
+      # - run:
+      #     name: Build
+      #     command: npm run build
+      - save_cache:
+          key: v0-build-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/node-template-cicd/dist/node-template-cicd
+
+workflows:
+  version: 2
+  ci-cd:
+    jobs:
+      - checkout
+      - dependencies:
+          requires:
+            - checkout
+      - test:
+          requires:
+            - checkout
+      - build:
+          requires:
+            - test
