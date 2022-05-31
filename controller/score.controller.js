@@ -12,6 +12,17 @@ exports.getAllScores = (req,res) => {
         })
 }
 
+exports.createNewUser = (req, res) => {
+    Score
+        .find()
+        .then( response => {
+            res.json({
+                length: response.length,
+                data: response
+            })
+        })
+}
+
 exports.saveScore = (req,res) => {
     let newScore = Score.create(req.body)
     .then( (saved) => {

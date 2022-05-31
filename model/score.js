@@ -16,7 +16,7 @@ let ScoreSchema = mongoose.Schema({
     },
 
     playedAt: { type: Date, default: Date.now }
-})
+})  
 
 const Score = mongoose.model("scores",ScoreSchema)
 module.exports = Score

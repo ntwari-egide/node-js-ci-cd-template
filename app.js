@@ -1,11 +1,13 @@
 require("./model/db")
 const express = require("express")
-const app = express();
 const ScoresRouter = require("./router/scores.route")
 var cors = require('cors')
 const morgan = require("morgan")
 const swaggerUi = require('swagger-ui-express');
 const { swaggerDocument, options } = require("./swagger");
+
+
+const app = express();
 
 // swagger documentation
 
